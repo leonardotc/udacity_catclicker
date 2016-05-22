@@ -1,0 +1,88 @@
+<html>
+  <head>
+    <title>Coursera Training</title>
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+<script src="js/jquery-1.12.4.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="col-sm-12">
+      <div class="list-container col-sm-4">
+        <ul class="cat-list">
+          <!-- to be populated by the cat list -->
+        </ul>
+      </div>
+      <div class="col-sm-8">
+        <div class="cat-container">
+          <!-- to be populated by the selected cat attributes -->
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    var cats = {
+      cat01: {total: 0, name: 'Marcelo', img:'img/blueboy3.jpg', selected: true},
+      cat02: {total: 0, name: 'Doris Clone', img:'img/blueboy4.jpg', selected: false},
+      cat03: {total: 0, name: 'Kid Kat', img:'img/blueboy5.jpg', selected: false},
+      cat04: {total: 0, name: 'Packed Cat', img:'img/blueboy6.jpg', selected: false},
+      cat05: {total: 0, name: 'Bath Cat', img:'img/blueboy7.jpg', selected: false}
+    }
+    
+    var renderCatList = function() {
+    
+      var catList = document.getElementsByClassName("cat-list")[0]
+      while (catList.firstChild) {
+          catList.removeChild(catList.firstChild);
+      }
+    
+      for (catId in cats) {
+        var li = document.createElement("li");
+        li.textContent = cats[catId].name;
+        catList.appendChild(li);
+        
+        li.addEventListener('click',function(aCat) {
+          return function() { 
+            for (cId in cats) { cats[cId].selected = false; }
+            aCat.selected = true;
+            renderCat(aCat);
+          }
+        }(cats[catId]));
+        
+        if (cats[catId].selected) {
+          renderCat(function(selectedCat){ return selectedCat; } (cats[catId]));
+        }
+        
+      }
+    }
+
+    var renderCat = function(cat) {
+      var catList = document.getElementsByClassName("cat-container")[0];
+        while (catList.firstChild) {
+        catList.removeChild(catList.firstChild);
+      }
+      
+      var nameEl = document.createElement("div");
+      nameEl.textContent = cat.name;
+      catList.appendChild(nameEl);
+      
+      var imgEl = document.createElement("img");
+      imgEl.src = cat.img;
+      catList.appendChild(imgEl);
+      
+      imgEl.addEventListener('click', function() { updateCat(cat); });
+      
+      var totalEl = document.createElement("div");
+      totalEl.textContent = cat.total;
+      catList.appendChild(totalEl);
+    };
+    
+    var updateCat = function(cat) {
+      cat.total++;
+      renderCat(cat);
+    };
+
+    renderCatList();
+    </script>
+</html>
