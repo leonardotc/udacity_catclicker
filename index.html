@@ -10,79 +10,140 @@
   <body>
     <div class="col-sm-12">
       <div class="list-container col-sm-4">
-        <ul class="cat-list">
-          <!-- to be populated by the cat list -->
-        </ul>
+        <ul id="cat-list"></ul>
       </div>
       <div class="col-sm-8">
-        <div class="cat-container">
+        <div id="cat-container">
           <!-- to be populated by the selected cat attributes -->
         </div>
       </div>
     </div>
   </body>
   <script>
-    var cats = {
-      cat01: {total: 0, name: 'Marcelo', img:'img/blueboy3.jpg', selected: true},
-      cat02: {total: 0, name: 'Doris Clone', img:'img/blueboy4.jpg', selected: false},
-      cat03: {total: 0, name: 'Kid Kat', img:'img/blueboy5.jpg', selected: false},
-      cat04: {total: 0, name: 'Packed Cat', img:'img/blueboy6.jpg', selected: false},
-      cat05: {total: 0, name: 'Bath Cat', img:'img/blueboy7.jpg', selected: false}
-    }
+    $(function() {
     
-    var renderCatList = function() {
-    
-      var catList = document.getElementsByClassName("cat-list")[0]
-      while (catList.firstChild) {
-          catList.removeChild(catList.firstChild);
-      }
-    
-      for (catId in cats) {
-        var li = document.createElement("li");
-        li.textContent = cats[catId].name;
-        catList.appendChild(li);
-        
-        li.addEventListener('click',function(aCat) {
-          return function() { 
-            for (cId in cats) { cats[cId].selected = false; }
-            aCat.selected = true;
-            renderCat(aCat);
+      var catsModel = {
+        init: function() {
+          if (!localStorage.selectedCatName) {
+            localStorage.selectedCatName = 'Marcelo';
           }
-        }(cats[catId]));
+          if (!localStorage.cats) {
+            localStorage.cats = JSON.stringify([
+              {total: 0, name: 'Marcelo', img:'img/blueboy3.jpg'},
+              {total: 0, name: 'Doris Clone', img:'img/blueboy4.jpg'},
+              {total: 0, name: 'Kid Kat', img:'img/blueboy5.jpg'},
+              {total: 0, name: 'Packed Cat', img:'img/blueboy6.jpg'},
+              {total: 0, name: 'Bath Cat', img:'img/blueboy7.jpg'}]);
+          }
+        },
         
-        if (cats[catId].selected) {
-          renderCat(function(selectedCat){ return selectedCat; } (cats[catId]));
+        getSelectedCat: function() {
+          return this.getCatByName(localStorage.selectedCatName);
+        },
+        
+        selectCat: function(cat) {
+          localStorage.selectedCatName = cat.name;
+        },
+        
+        getCats: function() {
+          return JSON.parse(localStorage.cats);
+        },
+        
+        updateCatList: function(list) {
+         localStorage.cats = JSON.stringify(list);
+        },
+        
+        updateCounter: function() {
+          var catName = localStorage.selectedCatName;
+          
+          var cats = JSON.parse(localStorage.cats);          
+          for (cat in cats) {
+            if (cats[cat].name === catName) {
+              cats[cat].total++;
+            }
+          }
+          this.updateCatList(cats);
+        },
+        
+        getCatByName: function(name) {
+          var cats = JSON.parse(localStorage.cats);
+          for (cat in cats) {
+            if (cats[cat].name === name) {
+              return cats[cat];
+            }
+          }
+          return {}
         }
+      }
+      
+      var octopus = {
+        init: function() {
+          catsModel.init();
+          catsView.init();
+        },
         
+        getCats: function() {
+          return catsModel.getCats();
+        },
+        
+        selectCat: function(cat) {
+          catsModel.selectCat(cat);
+          catsView.renderCat();
+        },
+        
+        getSelectedCat: function() {
+          return catsModel.getSelectedCat();
+        },
+        
+        count: function() {
+          catsModel.updateCounter();
+          catsView.renderCat();
+        }
       }
-    }
+      
+      var catsView = {
+        init: function() {
+          this.catList = $('#cat-list');
+          this.catNode = $('#cat-container');
+          this.renderList();
+          this.renderCat();
+        },
+        
+        renderList: function() {
+          var self = this;
+        
+          self.catList.html( '' );
+          octopus.getCats().forEach(function(cat) {
+          
+            var el = $(document.createElement("li"));
+            self.catList.append(el);
+            el.text(cat.name);
+            
+            el.click(function(e) {
+              octopus.selectCat(cat);
+            });
+          });
+        },
+        
+        renderCat: function() {
+          var cat = octopus.getSelectedCat();
+          var htmlStr = '';
+          
+          htmlStr += '<table>' + 
+                     '<td><tr><h2>'+ cat.name +'</h2></tr></td>' +
+                     '<td><tr><img src="'+ cat.img +'" id="active-cat"></h1></tr></td>' +
+                     '<td><tr><p>'+ cat.total +'</p></tr></td></table>';
+          this.catNode.html( htmlStr );
+          
+          $("#active-cat").click(function() {
+            octopus.count();
+          });
+          
+        }
 
-    var renderCat = function(cat) {
-      var catList = document.getElementsByClassName("cat-container")[0];
-        while (catList.firstChild) {
-        catList.removeChild(catList.firstChild);
       }
       
-      var nameEl = document.createElement("div");
-      nameEl.textContent = cat.name;
-      catList.appendChild(nameEl);
-      
-      var imgEl = document.createElement("img");
-      imgEl.src = cat.img;
-      catList.appendChild(imgEl);
-      
-      imgEl.addEventListener('click', function() { updateCat(cat); });
-      
-      var totalEl = document.createElement("div");
-      totalEl.textContent = cat.total;
-      catList.appendChild(totalEl);
-    };
-    
-    var updateCat = function(cat) {
-      cat.total++;
-      renderCat(cat);
-    };
-
-    renderCatList();
+      octopus.init();
+    });
     </script>
 </html>
