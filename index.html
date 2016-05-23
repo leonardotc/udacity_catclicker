@@ -4,6 +4,7 @@
     <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="css/custom.css">
 <script src="js/jquery-1.12.4.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
   </head>
@@ -14,11 +15,34 @@
       </div>
       <div class="col-sm-8">
         <div id="cat-container">
-		  <table>
+		      <table>
             <td><tr><h2 id="active-cat-name"></h2></tr></td>
-            <td><tr><img id="active-cat-img"></tr></td>
+            <td><tr><img id="active-cat-img" class="cat"></tr></td>
             <td><tr><p id="active-cat-counter"></p></tr></td>
           </table>
+          <button class="btn btn-info" id="admin">admin</button>
+          <div>
+          <div class="col-sm-4"></div>
+          <div class="col-sm-4">
+            <form id="admin-form">
+              <div class="container">
+                <div class="row">
+                  <input type="text" id="new-cat-name"/>
+                </div>
+                <div class="row">
+                  <input type="text" id="new-cat-img"/>
+                </div>
+                <div class="row">
+                  <input type="text" id="new-cat-count"/>
+                </div>
+                <div>
+                <button class="btn btn-success" id="save">Save</button>
+                <button class="btn btn-danger" id="cancel">Cancel</button>
+                </div>
+              </div>
+            </form>
+          </div>
+          </div>
         </div>
       </div>
     </div>
@@ -35,15 +59,17 @@
     
       var catsModel = {
         currentCat: null,
+        adminMode: null,
         cats: [
-              {total: 0, name: 'Marcelo', img:'img/blueboy3.jpg'},
-              {total: 0, name: 'Doris Clone', img:'img/blueboy4.jpg'},
-              {total: 0, name: 'Kid Kat', img:'img/blueboy5.jpg'},
-              {total: 0, name: 'Packed Cat', img:'img/blueboy6.jpg'},
-              {total: 0, name: 'Bath Cat', img:'img/blueboy7.jpg'}],
+          {total: 0, name: 'Marcelo', img:'img/blueboy3.jpg'},
+          {total: 0, name: 'Doris Clone', img:'img/blueboy4.jpg'},
+          {total: 0, name: 'Kid Kat', img:'img/blueboy5.jpg'},
+          {total: 0, name: 'Packed Cat', img:'img/blueboy6.jpg'},
+          {total: 0, name: 'Bath Cat', img:'img/blueboy7.jpg'}],
         
         init: function() {
           this.currentCat = this.cats[0];
+          this.adminMode = false;
         },
 
         getCats: function() {
@@ -61,6 +87,18 @@
         updateCounter: function() {
           this.currentCat.total++;
         },
+        
+        toggleAdminMode: function() {
+          this.adminMode = !this.adminMode;
+        },
+        
+        getAdminMode: function() {
+          return this.adminMode;
+        },
+        
+        setCurrentCat: function(cat) {
+          this.currentCat = cat;
+        }
         
       }
       
@@ -86,7 +124,20 @@
         count: function() {
           catsModel.updateCounter();
           catsView.renderCat();
+        },
+        
+        toggleAdminMode: function() {
+          catsModel.toggleAdminMode();
+          var show = catsModel.getAdminMode();
+          catsView.hideOrShowForm(show);
+        },
+        
+        changeCurrentCat(name, imgUrl, count) {
+          catsModel.setCurrentCat({total: count, 
+            name: name, 
+            img: imgUrl});
         }
+        
       }
       
       var catsView = {
@@ -96,6 +147,25 @@
           this.imgNode = $("#active-cat-img");
           this.counterNode = $("#active-cat-counter");
           this.catList = $('#cat-list');
+          this.adminForm = $('#admin-form');
+          
+          this.newCatBox = $('#new-cat-name');
+          this.newCatImg = $('#new-cat-img');
+          this.newCatCount = $('#new-cat-count');
+          
+          $('#save').click(function() {
+            this.newCatBox.text;
+            this.newCatImg.text;
+            this.newCatCount.text;
+          });
+          
+          $('#cancel').click(function() {
+            octopus.toggleAdminMode();
+          });
+          
+          $('#admin').click(function(e) {
+            octopus.toggleAdminMode();
+          });
 
           this.imgNode.click(function() {
             octopus.count();
@@ -127,10 +197,19 @@
           this.nameNode.html( cat.name );
           this.imgNode.attr('src', cat.img );
           this.counterNode.html( cat.total );
-                    
+
+        },
+        
+        hideOrShowForm: function(shouldShow) {
+          if (shouldShow) {
+            this.adminForm.show();
+          }
+          else {
+            this.adminForm.hide();
+          }
         }
 
-      }
+      }      
       
       octopus.init();
     });
