@@ -25,6 +25,13 @@
   </body>
   <script>
     $(function() {
+	
+    /* 
+      a few changes, that werent mine by design, were done:
+      -optimized the event listener in the selected cat
+      -used a cat object as reference for the currentCat in the model (shouldve done it in the first place)
+      -gave up on the persistency (werent a requirement in the first place)
+	*/
     
       var catsModel = {
         currentCat: null,
