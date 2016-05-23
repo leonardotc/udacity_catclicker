@@ -14,7 +14,11 @@
       </div>
       <div class="col-sm-8">
         <div id="cat-container">
-          <!-- to be populated by the selected cat attributes -->
+		  <table>
+            <td><tr><h2 id="active-cat-name"></h2></tr></td>
+            <td><tr><img id="active-cat-img"></tr></td>
+            <td><tr><p id="active-cat-counter"></p></tr></td>
+          </table>
         </div>
       </div>
     </div>
@@ -23,57 +27,34 @@
     $(function() {
     
       var catsModel = {
-        init: function() {
-          if (!localStorage.selectedCatName) {
-            localStorage.selectedCatName = 'Marcelo';
-          }
-          if (!localStorage.cats) {
-            localStorage.cats = JSON.stringify([
+        currentCat: null,
+        cats: [
               {total: 0, name: 'Marcelo', img:'img/blueboy3.jpg'},
               {total: 0, name: 'Doris Clone', img:'img/blueboy4.jpg'},
               {total: 0, name: 'Kid Kat', img:'img/blueboy5.jpg'},
               {total: 0, name: 'Packed Cat', img:'img/blueboy6.jpg'},
-              {total: 0, name: 'Bath Cat', img:'img/blueboy7.jpg'}]);
-          }
-        },
+              {total: 0, name: 'Bath Cat', img:'img/blueboy7.jpg'}],
         
+        init: function() {
+          this.currentCat = this.cats[0];
+        },
+
+        getCats: function() {
+          return this.cats;
+        },
+
         getSelectedCat: function() {
-          return this.getCatByName(localStorage.selectedCatName);
+          return this.currentCat;
         },
         
         selectCat: function(cat) {
-          localStorage.selectedCatName = cat.name;
-        },
-        
-        getCats: function() {
-          return JSON.parse(localStorage.cats);
-        },
-        
-        updateCatList: function(list) {
-         localStorage.cats = JSON.stringify(list);
+          this.currentCat = cat;
         },
         
         updateCounter: function() {
-          var catName = localStorage.selectedCatName;
-          
-          var cats = JSON.parse(localStorage.cats);          
-          for (cat in cats) {
-            if (cats[cat].name === catName) {
-              cats[cat].total++;
-            }
-          }
-          this.updateCatList(cats);
+          this.currentCat.total++;
         },
         
-        getCatByName: function(name) {
-          var cats = JSON.parse(localStorage.cats);
-          for (cat in cats) {
-            if (cats[cat].name === name) {
-              return cats[cat];
-            }
-          }
-          return {}
-        }
       }
       
       var octopus = {
@@ -103,8 +84,16 @@
       
       var catsView = {
         init: function() {
+
+          this.nameNode = $("#active-cat-name");
+          this.imgNode = $("#active-cat-img");
+          this.counterNode = $("#active-cat-counter");
           this.catList = $('#cat-list');
-          this.catNode = $('#cat-container');
+
+          this.imgNode.click(function() {
+            octopus.count();
+          });
+		  
           this.renderList();
           this.renderCat();
         },
@@ -127,18 +116,11 @@
         
         renderCat: function() {
           var cat = octopus.getSelectedCat();
-          var htmlStr = '';
-          
-          htmlStr += '<table>' + 
-                     '<td><tr><h2>'+ cat.name +'</h2></tr></td>' +
-                     '<td><tr><img src="'+ cat.img +'" id="active-cat"></h1></tr></td>' +
-                     '<td><tr><p>'+ cat.total +'</p></tr></td></table>';
-          this.catNode.html( htmlStr );
-          
-          $("#active-cat").click(function() {
-            octopus.count();
-          });
-          
+
+          this.nameNode.html( cat.name );
+          this.imgNode.attr('src', cat.img );
+          this.counterNode.html( cat.total );
+                    
         }
 
       }
