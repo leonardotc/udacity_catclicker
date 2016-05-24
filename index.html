@@ -37,7 +37,7 @@
                 </div>
                 <div>
                 <button class="btn btn-success" id="save">Save</button>
-                <button class="btn btn-danger" id="cancel">Cancel</button>
+                <button class="btn btn-danger" id="cancel" type>Cancel</button>
                 </div>
               </div>
             </form>
@@ -96,8 +96,16 @@
           return this.adminMode;
         },
         
-        setCurrentCat: function(cat) {
-          this.currentCat = cat;
+        setAdminMode(aBool) {
+          this.adminMode = aBool;
+        },
+        
+        updateCurrentCat: function(cat) {
+          var currentCat = this.getSelectedCat();
+          currentCat.name = cat.name;
+          currentCat.img = cat.img;
+          currentCat.total = cat.total;
+          
         }
         
       }
@@ -105,7 +113,9 @@
       var octopus = {
         init: function() {
           catsModel.init();
+          catsModel.setAdminMode(false);
           catsView.init();
+          catsView.hideOrShowForm();
         },
         
         getCats: function() {
@@ -132,16 +142,19 @@
           catsView.hideOrShowForm(show);
         },
         
-        changeCurrentCat(name, imgUrl, count) {
-          catsModel.setCurrentCat({total: count, 
+        updateCurrentCat: function(name, imgUrl, count) {
+          catsModel.updateCurrentCat({total: count, 
             name: name, 
             img: imgUrl});
+          catsView.renderCat();
         }
-        
+
       }
       
       var catsView = {
         init: function() {
+        
+          var self = this;
 
           this.nameNode = $("#active-cat-name");
           this.imgNode = $("#active-cat-img");
@@ -153,14 +166,20 @@
           this.newCatImg = $('#new-cat-img');
           this.newCatCount = $('#new-cat-count');
           
-          $('#save').click(function() {
-            this.newCatBox.text;
-            this.newCatImg.text;
-            this.newCatCount.text;
+          $('#admin-form').submit(function(e) {
+            return false;
           });
-          
-          $('#cancel').click(function() {
+
+          $('#cancel').click(function(e) {
             octopus.toggleAdminMode();
+          });
+
+          $('#save').click(function(e) {
+            octopus.updateCurrentCat(
+              self.newCatBox.val(),
+              self.newCatImg.val(),
+              self.newCatCount.val()
+            );
           });
           
           $('#admin').click(function(e) {
@@ -197,6 +216,10 @@
           this.nameNode.html( cat.name );
           this.imgNode.attr('src', cat.img );
           this.counterNode.html( cat.total );
+		  
+		      this.newCatBox.attr('value', cat.name );
+          this.newCatImg.attr('value', cat.img );
+          this.newCatCount.attr('value', cat.total );
 
         },
         
