@@ -138,8 +138,13 @@
           catsView.renderCat();
         },
         
-        toggleAdminMode: function() {
-          catsModel.toggleAdminMode();
+        toggleAdminMode: function(optionalValue) {
+          if (optionalValue === undefined) {
+            catsModel.toggleAdminMode();
+          }
+          else {
+            catsModel.setAdminMode(optionalValue);
+          }
           var show = catsModel.getAdminMode();
           catsView.hideOrShowForm(show);
         },
@@ -223,7 +228,7 @@
 		      this.newCatBox.val( cat.name );
           this.newCatImg.val( cat.img );
           this.newCatCount.val( cat.total );
-
+          octopus.toggleAdminMode(false);
         },
         
         hideOrShowForm: function(shouldShow) {
