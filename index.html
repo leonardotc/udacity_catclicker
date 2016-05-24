@@ -9,11 +9,14 @@
 <script src="js/bootstrap.min.js"></script>
   </head>
   <body>
+    <div class="col-sm-12 title">
+      <h2>Cat Clicker <span class="premium">Premium</span> <span class="pro">Pro</span></h2>
+    </div>
     <div class="col-sm-12">
-      <div class="list-container col-sm-4">
+      <div class="list-container col-sm-3">
         <ul id="cat-list"></ul>
       </div>
-      <div class="col-sm-8">
+      <div class="col-sm-9">
         <div id="cat-container">
 		      <table>
             <td><tr><h2 id="active-cat-name"></h2></tr></td>
@@ -22,26 +25,26 @@
           </table>
           <button class="btn btn-info" id="admin">admin</button>
           <div>
-          <div class="col-sm-4"></div>
-          <div class="col-sm-4">
-            <form id="admin-form">
-              <div class="container">
-                <div class="row">
-                  <input type="text" id="new-cat-name"/>
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+              <form id="admin-form">
+                <div class="container">
+                  <div class="row">
+                    Name <input type="text" id="new-cat-name"/>
+                  </div>
+                  <div class="row">
+                    Img <input type="text" id="new-cat-img"/>
+                  </div>
+                  <div class="row">
+                    #Clicks <input type="text" id="new-cat-count"/>
+                  </div>
+                  <div>
+                  <button class="btn btn-danger" id="cancel" type>Cancel</button>
+                  <button class="btn btn-success" id="save">Save</button>
+                  </div>
                 </div>
-                <div class="row">
-                  <input type="text" id="new-cat-img"/>
-                </div>
-                <div class="row">
-                  <input type="text" id="new-cat-count"/>
-                </div>
-                <div>
-                <button class="btn btn-success" id="save">Save</button>
-                <button class="btn btn-danger" id="cancel" type>Cancel</button>
-                </div>
-              </div>
-            </form>
-          </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -113,7 +116,6 @@
       var octopus = {
         init: function() {
           catsModel.init();
-          catsModel.setAdminMode(false);
           catsView.init();
           catsView.hideOrShowForm();
         },
@@ -146,6 +148,7 @@
           catsModel.updateCurrentCat({total: count, 
             name: name, 
             img: imgUrl});
+          catsView.renderList();
           catsView.renderCat();
         }
 
